@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/button";
 import { useDeletePost } from "../../services/mutations";
 import { IPost } from "../../types";
 import Loader from "../../components/shared/Loader";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const PostsPage = () => {
   const {
@@ -38,11 +39,12 @@ const PostsPage = () => {
     deletePost.mutate(id);
   },[deletePost]);
 
+  const debounceValue = useDebounce(searchValue, 1000);
   const filteredData = useMemo(() => data?.pages.flatMap(page => page).filter(
     (post: IPost) =>
-      post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      post.body.toLowerCase().includes(searchValue.toLowerCase())
-  ),[data?.pages, searchValue]);
+      post.title.toLowerCase().includes(debounceValue.toLowerCase()) ||
+      post.body.toLowerCase().includes(debounceValue.toLowerCase())
+  ),[data?.pages, debounceValue]);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
