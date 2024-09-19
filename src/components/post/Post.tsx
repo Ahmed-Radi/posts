@@ -2,6 +2,7 @@ import { Fragment } from "react/jsx-runtime";
 import { Button } from "../ui/button";
 import { IPost } from "../../types";
 import { Link } from "react-router-dom";
+import { memo } from "react";
 
 type PostProps = {
 	post: IPost;
@@ -32,4 +33,4 @@ const Post = ({ post, handleSelect, handleDeleteSelectedPost, deleteIsLoading }:
 	);
 };
 
-export default Post;
+export default memo(Post);
