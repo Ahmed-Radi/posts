@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Input } from "../ui/input";
 
 type Props = {
@@ -6,7 +7,6 @@ type Props = {
 }
 
 const SearchInput = ({ searchValue, handleSearch }: Props) => {
-
   return (
 		<>
 			<Input
@@ -19,4 +19,4 @@ const SearchInput = ({ searchValue, handleSearch }: Props) => {
   );
 }
 
-export default SearchInput
+export default memo(SearchInput)

@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import Post from "../components/post/Post";
-import { usePosts } from "../services/queries";
-import UpdateDialog from "../components/UpdateDialog";
-import SearchInput from "../components/post/SearchInput";
-import EmptyData from "../components/shared/EmptyData";
-import { Button } from "../components/ui/button";
-import { useDeletePost } from "../services/mutations";
-import { IPost } from "../types";
-import Loader from "../components/shared/Loader";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Post from "../../components/post/Post";
+import { usePosts } from "../../services/queries";
+import UpdateDialog from "../../components/UpdateDialog";
+import SearchInput from "../../components/post/SearchInput";
+import EmptyData from "../../components/shared/EmptyData";
+import { Button } from "../../components/ui/button";
+import { useDeletePost } from "../../services/mutations";
+import { IPost } from "../../types";
+import Loader from "../../components/shared/Loader";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const PostsPage = () => {
   const {
@@ -24,25 +25,26 @@ const PostsPage = () => {
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [open, setOpen] = useState(false);
 
-  const handleSearch = (text: string) => {
+  const handleSearch = useCallback((text: string) => {
     setSearchValue(text);
-  };
+  } ,[]);
 
-  const handleSelect = (id?: number) => {
+  const handleSelect = useCallback((id?: number) => {
     const selectedPost = data?.pages.flatMap(page => page).find((post: IPost) => post.id === id);
     setSelectedPost(selectedPost!);
     setOpen(true);
-  };
+  },[data?.pages]);
 
-  const handleDeleteSelectedPost = (id: number) => {
+  const handleDeleteSelectedPost = useCallback((id: number) => {
     deletePost.mutate(id);
-  };
+  },[deletePost]);
 
-  const filteredData = data?.pages.flatMap(page => page).filter(
+  const debounceValue = useDebounce(searchValue, 1000);
+  const filteredData = useMemo(() => data?.pages.flatMap(page => page).filter(
     (post: IPost) =>
-      post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      post.body.toLowerCase().includes(searchValue.toLowerCase())
-  );
+      post.title.toLowerCase().includes(debounceValue.toLowerCase()) ||
+      post.body.toLowerCase().includes(debounceValue.toLowerCase())
+  ),[data?.pages, debounceValue]);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -94,8 +96,10 @@ const PostsPage = () => {
           <EmptyData />
         )}
       </div>
+
       <div ref={loadMoreRef} style={{ height: 20, backgroundColor: 'transparent' }} />
       {isFetchingNextPage && <div className="w-full h-10 text-5xl font-bold text-center my-3">Loading more...</div>}
+
       <UpdateDialog
         selectedPost={selectedPost!}
         setSelectedPost={setSelectedPost}

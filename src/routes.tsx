@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import PostLayout from "./layouts/PostLayout";
-import PostsPage from "./pages/PostsPage";
+import PostsPage from "./pages/posts/PostsPage";
 import Notfound from "./pages/Notfound";
-import SinglePost from "./pages/SinglePost";
+import SinglePost from "./pages/posts/SinglePost";
 
 const routes = createBrowserRouter([
   {

@@ -1,3 +1,5 @@
+import { memo } from "react"
+
 type SinglePostElementProps = {
   title: string | undefined
   content: string | undefined
@@ -12,4 +14,4 @@ const SinglePostElement = ({ title, content }: SinglePostElementProps) => {
   )
 }
 
-export default SinglePostElement
+export default memo(SinglePostElement)
